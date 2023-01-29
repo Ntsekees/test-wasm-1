@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello, World! in WebAssembly</title>
+  </head>
+  <body>
+    <div id="a">[ NOT YET LOADED ]</div>
+    <script type="text/javascript">
+      async function bytes(path) {
+        if (typeof fetch !== "undefined") {
+          return await fetch(path).then(response => response.arrayBuffer());
+        }
+        return await import('fs').then(fs => fs.readFileSync(path));
+      }
+
+      (async () => {
+        const file = await bytes('reverse.wasm');
+        console.log("STEP #1/5: OK")
+        const wasm = await WebAssembly.instantiate(file);
+        console.log("STEP #2/5: OK")
+        const { memory, reverse } = wasm.instance.exports;
+        console.log("STEP #3/5: OK")
+        const plaintext = "helloworld";
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+        const buffer = new Uint8Array(memory.buffer, 0, plaintext.length);
+        buffer.set(encoder.encode(plaintext), 0);
+        console.log("STEP #4/5: OK")
+        reverse(buffer, buffer.length);
+        console.log("STEP #5/5: OK")
+        console.log(buffer);
+        console.log(decoder.decode(buffer));
+        document.getElementById("a").innerHTML = decoder.decode(buffer)
+        buffer.set(Array(buffer.length).fill(0)); // null out input
+      })();
+    </script>
+  </body>
+</html>

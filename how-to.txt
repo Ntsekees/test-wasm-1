@@ -1,0 +1,8 @@
+ 
+• Run either ⟦build_c.sh⟧ or ⟦build_nim.sh⟧.
+• Start a server using ⟪python3 -m http.server⟫.
+• Open ⟦view.html⟧ in your browser.
+  (Maybe you'll get a CORS policy error when the web page attempts to load the local WASM file, in which case you'll need to tweak your browser's settings.)
+• Once done with ⟦view.html⟧, close the server session.
+
+
