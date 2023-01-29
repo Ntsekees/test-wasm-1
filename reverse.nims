@@ -36,7 +36,7 @@ if defined(emscripten):
   #switch("passL", "-Wl,--export-all")
   switch("passL", "-sSTANDALONE_WASM")
   switch("passL", "-Wl,--no-entry")
-  switch("noMain", "off")
+  switch("noMain", "on")
   switch("passL", "-o reverse.wasm")
   
 

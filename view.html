@@ -27,6 +27,7 @@
         const buffer = new Uint8Array(memory.buffer, 0, plaintext.length);
         buffer.set(encoder.encode(plaintext), 0);
         console.log("STEP #4/5: OK")
+        console.log("L: " + buffer.length.toString())
         reverse(buffer, buffer.length);
         console.log("STEP #5/5: OK")
         console.log(buffer);
