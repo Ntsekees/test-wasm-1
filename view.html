@@ -30,14 +30,14 @@
         const plaintext = "helloworld";
         const encoder = new TextEncoder();
         const decoder = new TextDecoder();
-        console.log(memory.buffer)
-        var offset = 0
+        console.log(memory.buffer);
+        var offset = 0;
         const buffer = new Uint8Array(memory.buffer, offset, plaintext.length);
         buffer.set(encoder.encode(plaintext), 0);
         console.log(decoder.decode(buffer));
         reverse(offset + buffer.byteOffset, buffer.length);
         console.log(decoder.decode(buffer));
-        document.getElementById("a").innerHTML = decoder.decode(buffer)
+        document.getElementById("a").innerHTML = decoder.decode(buffer);
         buffer.set(Array(buffer.length).fill(0)); // null out input
       })();
     </script>
