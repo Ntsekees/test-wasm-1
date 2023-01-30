@@ -9,10 +9,4 @@ proc reverse*(plaintext: var cstring, length: cint): void {.exportc.} =
     i += 1
   return
 
-# TESTING:
-var s: string = "abcdef"
-var cs: cstring = cstring(s)
-reverse(cs, 6)
-echo $cs
-echo s
-quit()
+

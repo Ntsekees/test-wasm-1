@@ -31,10 +31,11 @@ if defined(emscripten):
   # Pass this to Emscripten linker to generate html file scaffold for us.
   
   #switch("passL", "-sMAIN_MODULE")
+  switch("passL", "-Os")
   switch("passL", "-fPIC")
-  switch("passL", "-s EXPORTED_FUNCTIONS='[\"_reverse\"]'")
   #switch("passL", "-Wl,--export-all")
   switch("passL", "-sSTANDALONE_WASM")
+  switch("passL", "-s EXPORTED_FUNCTIONS='[\"_reverse\"]'")
   switch("passL", "-Wl,--no-entry")
   switch("noMain", "on")
   switch("passL", "-o reverse.wasm")
