@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello, World! in WebAssembly</title>
+  </head>
+  <body>
+    <div id="text">[ NOT YET LOADED ]</div>
+    <script type="text/javascript">
+      function buf2hex(buffer) { // buffer is an ArrayBuffer
+        return [...new Uint8Array(buffer)]
+          .map(x => x.toString(0x10).padStart(2, '0'))
+          .join(' ');
+      }
+      async function bytes(path) {
+        if (typeof fetch !== "undefined") {
+          return await fetch(path).then(
+            response => response.arrayBuffer());
+        }
+        return await import('fs').then(fs => fs.readFileSync(path));
+      }
+
+      (async () => {
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+        function showmem(addr, len) {
+          console.log(buf2hex(
+            memory8.slice(addr, addr + len)));
+        }
+        function js_log(str_addr, str_len) {
+          console.log(decoder.decode(
+            memory8.slice(str_addr, str_addr + str_len)));
+            showmem(str_addr, str_len);
+          return;
+        }
+        var input_size = null;
+        var input = null;
+        var output = null;
+        var memory8 = null;
+        function wa_input_size() {
+          return input_size;
+        }
+        function wa_input(addr) {
+          var i = 0;
+          while (i < input_size) {
+            memory8[addr + i] = input[i];
+            i++;
+          }
+          return;
+        }
+        function wa_output(addr, length) {
+          output = new Uint8Array(memory8.buffer, addr, length);
+          return;
+        }
+        const wasm_memory = new WebAssembly.Memory({initial: 256});
+        const importObject = {
+          'wasi_snapshot_preview1': {
+            'proc_exit': function() {},
+            'fd_close': function() {},
+            'fd_write': function() {},
+            'fd_seek': function() {}
+          },
+          'env': {
+            'memoryBase': 0,
+            'tableBase': 0,
+            'memory': wasm_memory,
+            'table': new WebAssembly.Table({
+              initial: 0,
+              element: 'anyfunc'
+            }),
+            'js_log': js_log,
+            'wa_input_size': wa_input_size,
+            'wa_input': wa_input,
+            'wa_output': wa_output
+          }
+        }
+        const file = await bytes('reverse.wasm');
+        const wasm = await WebAssembly.instantiate(file, importObject);
+        const { memory, wa_reverse } = wasm.instance.exports;
+        memory8 = new Uint8Array(memory.buffer, 0, 0x4000);
+        const plaintext = "helloworld";
+        input_size = plaintext.length;
+        input = new Uint8Array(input_size);
+        output = new Uint8Array(input_size);
+        input.set(encoder.encode(plaintext), 0);
+        wa_reverse()
+        document.getElementById("text").innerHTML = (
+          decoder.decode(output));
+        input.set(Array(input_size).fill(0)); // null out input
+        output.set(Array(input_size).fill(0)); // null out output
+      })();
+    </script>
+  </body>
+</html>
